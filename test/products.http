@@ -1,0 +1,38 @@
+@apiurl = https://fw-teaching.fi/demo/wdbocms/api/v1/products/
+
+GET {{apiurl}}
+
+
+### Get one product
+
+GET {{apiurl}}/1002
+
+### create a product
+
+POST {{apiurl}}
+Content-Type: application/json
+
+{
+    "name": "jeans",
+    "price": 49.99
+}
+### update a product information
+PATCH {{apiurl}}/1001
+Content-Type: application/json
+
+{
+    "price": 29
+}
+
+### put update hole product information
+PUT {{apiurl}}/1001
+Content-Type: application/json
+
+{
+    "name": "t-shirt",
+    "price": 29
+}
+
+
+### delete a product
+DELETE {{apiurl}}/1005

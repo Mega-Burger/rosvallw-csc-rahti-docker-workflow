@@ -31,3 +31,11 @@ async def get_ip(request: Request):
         ip = request.client.host
 
     return {"ip": ip}
+
+@app.get("/rooms")
+def get_rooms():
+    return [
+        {"name": "room1", "type": "double", "beds": 2, "price": 100},
+        {"name": "room2", "type": "single", "beds": 1, "price": 80},
+        {"name": "room3", "type": "triple", "beds": 3, "price": 120}
+    ]
