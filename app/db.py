@@ -9,27 +9,48 @@ def get_conn():
 def create_schema():
     try:
         with get_conn() as conn, conn.cursor() as cur:
-            # Create the schema
             cur.execute("""
-                -- sample parent table
-                CREATE TABLE IF NOT EXISTS foo (
-                    id SERIAL PRIMARY KEY, -- primary key
-                    created_at TIMESTAMP DEFAULT now()
-                );
-                
-                -- sample child table
-                CREATE TABLE IF NOT EXISTS bar (
+                CREATE TABLE IF NOT EXISTS hotel_guests (
                     id SERIAL PRIMARY KEY,
-                    foo_id INT REFERENCES foo(id), -- foreign key
-                    created_at TIMESTAMP DEFAULT now()
+                    firstname VARCHAR NOT NULL,
+                    lastname VARCHAR NOT NULL,
+                    address VARCHAR
                 );
 
-                -- adding columns after the fact
-                ALTER TABLE foo ADD COLUMN IF NOT EXISTS name VARCHAR;
-                ALTER TABLE foo ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT now()""")
-            
-            # insert sample data
-            cur.execute("""INSERT INTO foo (name) VALUES ('test')""")
+                CREATE TABLE IF NOT EXISTS hotel_rooms (
+                    id SERIAL PRIMARY KEY,
+                    room_number INT NOT NULL,
+                    type VARCHAR NOT NULL,
+                    price NUMERIC NOT NULL DEFAULT 0
+                );
+
+                CREATE TABLE IF NOT EXISTS hotel_bookings (
+                    id SERIAL PRIMARY KEY,
+                    guest_id INT REFERENCES hotel_guests(id),
+                    room_id INT REFERENCES hotel_rooms(id),
+                    datefrom DATE NOT NULL,
+                    dateto DATE NOT NULL,
+                    addinfo VARCHAR
+                );
+            """)
+
+            # Sample data — INSERT only if tables are empty
+            cur.execute("SELECT COUNT(*) as c FROM hotel_rooms")
+            if cur.fetchone()["c"] == 0:
+                cur.execute("""
+                    INSERT INTO hotel_rooms (room_number, type, price) VALUES
+                    (101, 'single', 80),
+                    (102, 'double', 120),
+                    (103, 'suite', 200);
+                """)
+
+            cur.execute("SELECT COUNT(*) as c FROM hotel_guests")
+            if cur.fetchone()["c"] == 0:
+                cur.execute("""
+                    INSERT INTO hotel_guests (firstname, lastname, address) VALUES
+                    ('Anna', 'Korhonen', 'Helsinki'),
+                    ('Mikael', 'Berg', 'Espoo');
+                """)
 
     except Exception as e:
         print(f"Error while creating schema: {e}")

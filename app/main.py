@@ -36,13 +36,21 @@ def read_root():
 
 @app.get("/rooms")
 def get_rooms():
-    return temp_rooms
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT * FROM hotel_rooms")
+        rooms = cur.fetchall()
+    return rooms
 
 @app.post("/bookings")
-def create_booking():
-    # skapa en bokning i databasen (insert into bookings ...)
-    return {"msg": "Bokning skapad"}
-
+def create_booking(guest_id: int, room_id: int, datefrom: str, dateto: str, addinfo: str = None):
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO hotel_bookings (guest_id, room_id, datefrom, dateto, addinfo)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+        """, (guest_id, room_id, datefrom, dateto, addinfo))
+        new_id = cur.fetchone()["id"]
+    return {"msg": "Bokning skapad", "booking_id": new_id}
 
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
