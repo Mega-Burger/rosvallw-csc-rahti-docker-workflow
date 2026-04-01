@@ -1,0 +1,38 @@
+@apiurl = http://127.0.0.1:8080
+
+GET {{apiurl}}
+
+
+### Get all rooms
+
+GET {{apiurl}}/rooms
+
+### create new booking
+
+POST {{apiurl}}/bookings
+Content-Type: application/json
+
+{
+    "room_id": 1
+    
+}
+### update a product information
+PATCH {{apiurl}}/1001
+Content-Type: application/json
+
+{
+    "price": 29
+}
+
+### put update hole product information
+PUT {{apiurl}}/1001
+Content-Type: application/json
+
+{
+    "name": "t-shirt",
+    "price": 29
+}
+
+
+### delete a product
+DELETE {{apiurl}}/1005

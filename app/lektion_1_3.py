@@ -12,26 +12,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# tillfällig "databas" över rum
-temp_rooms = [
-    {"room_number": 101, "room_type": "double", "beds": 2, "price": 100},
-    {"room_number": 102, "room_type": "single", "beds": 1, "price": 80},
-    {"room_number": 103, "room_type": "triple", "beds": 3, "price": 120}
-]
-
 @app.get("/")
 def read_root():
-    return { "msg": "Välkommen till hotellets bookningssystem", "v": "0.1" }
-
-@app.get("/rooms")
-def get_rooms():
-    return temp_rooms
-
-@app.post("/bookings")
-def create_booking():
-    # skapa en bokning i databasen (insert into bookings ...)
-    return {"msg": "Bokning skapad"}
+    return { "msg": "Hello dev docker", "v": "0.1" }
 
 
 @app.get("/items/{id}")
@@ -49,3 +32,10 @@ async def get_ip(request: Request):
 
     return {"ip": ip}
 
+@app.get("/rooms")
+def get_rooms():
+    return [
+        {"name": "room1", "type": "double", "beds": 2, "price": 100},
+        {"name": "room2", "type": "single", "beds": 1, "price": 80},
+        {"name": "room3", "type": "triple", "beds": 3, "price": 120}
+    ]
