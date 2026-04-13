@@ -67,3 +67,14 @@ async def get_ip(request: Request):
 
     return {"ip": ip}
 
+
+@app.get("/if/{term}")
+def if_test(term: str):
+    ret_str="Default message..."
+    if term == "hello":
+        ret_str="Hello to you too!"
+    elif term == "hej" and 1 == 0:
+        ret_str="Hej på dig!"
+    else:
+        ret_str=f"vad betyder {term}?"
+    return {"msg": ret_str}
