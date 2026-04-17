@@ -2,6 +2,20 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import get_conn
 from app.db import get_conn, create_schema
+from pydantic import BaseModel
+
+class Room(BaseModel):
+    room_number: int
+    room_type: str
+    beds: int
+    price: int
+
+class Booking(BaseModel):
+    guest_id: int
+    room_id: int
+    datefrom: str
+    dateto: str
+    addinfo: str = None
 
 app = FastAPI()
 
@@ -42,19 +56,30 @@ def get_rooms():
     return rooms
 
 @app.post("/bookings")
-def create_booking(guest_id: int, room_id: int, datefrom: str, dateto: str, addinfo: str = None):
+def create_booking(booking: Booking):
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute("""
             INSERT INTO hotel_bookings (guest_id, room_id, datefrom, dateto, addinfo)
             VALUES (%s, %s, %s, %s, %s)
             RETURNING id
-        """, (guest_id, room_id, datefrom, dateto, addinfo))
+        """, (booking.guest_id, booking.room_id, booking.datefrom, booking.dateto, booking.addinfo))
         new_id = cur.fetchone()["id"]
     return {"msg": "Bokning skapad", "booking_id": new_id}
 
+@app.get("/bookings")
+def get_bookings():
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT hb.id, hr.room_number, hb.datefrom, hb.dateto
+            FROM hotel_bookings hb
+            JOIN hotel_rooms hr ON hb.room_id = hr.id
+        """)
+        bookings = cur.fetchall()
+    return bookings
+
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
-    return {"id": id, "q": q}
+    return {"id": item_id, "q": q}
 
 @app.get("/api/ip")
 async def get_ip(request: Request):
