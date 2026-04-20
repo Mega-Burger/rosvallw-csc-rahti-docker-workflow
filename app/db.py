@@ -20,6 +20,7 @@ def create_schema():
                     lastname VARCHAR NOT NULL,
                     address VARCHAR
                 );
+                ALTER TABLE hotel_guests ADD COLUMN api_key VARCHAR DEFAULT encode(gen_random_bytes(32), 'hex');
 
                 CREATE TABLE IF NOT EXISTS hotel_rooms (
                     id SERIAL PRIMARY KEY,
@@ -36,6 +37,7 @@ def create_schema():
                     dateto DATE NOT NULL,
                     addinfo VARCHAR
                 );
+                ALTER TABLE hotel_bookings ADD COLUMN IF NOT EXISTS stars INT;
 
             """)
 

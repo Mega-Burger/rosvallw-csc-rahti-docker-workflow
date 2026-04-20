@@ -95,6 +95,19 @@ def get_bookings():
         """)
         bookings = cur.fetchall()
     return bookings
+
+class Review(BaseModel):
+    stars: int
+
+@app.put("/bookings/{id}")
+def update_booking(id: int, review: Review):
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            UPDATE hotel_bookings SET stars = %s WHERE id = %s
+        """, (review.stars, id))
+    return {"msg": "Review saved"}
+
+
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
     
