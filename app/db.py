@@ -10,6 +10,10 @@ def create_schema():
     try:
         with get_conn() as conn, conn.cursor() as cur:
             cur.execute("""
+                -- lägg till 
+                   CREATE EXTENSION IF NOT EXISTS pgcrypto;
+                        
+                        
                 CREATE TABLE IF NOT EXISTS hotel_guests (
                     id SERIAL PRIMARY KEY,
                     firstname VARCHAR NOT NULL,
@@ -32,6 +36,7 @@ def create_schema():
                     dateto DATE NOT NULL,
                     addinfo VARCHAR
                 );
+
             """)
 
             # Sample data — INSERT only if tables are empty
