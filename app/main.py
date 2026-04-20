@@ -1,7 +1,16 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from app.db import get_conn
 from app.db import get_conn, create_schema
+
+class Booking(BaseModel):
+    guest_id: int
+    room_id: int
+    datefrom: str
+    dateto: str
+    addinfo: str = None
+
 
 app = FastAPI()
 
@@ -42,13 +51,13 @@ def get_rooms():
     return rooms
 
 @app.post("/bookings")
-def create_booking(guest_id: int, room_id: int, datefrom: str, dateto: str, addinfo: str = None):
+def create_booking(booking: Booking):
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute("""
             INSERT INTO hotel_bookings (guest_id, room_id, datefrom, dateto, addinfo)
             VALUES (%s, %s, %s, %s, %s)
             RETURNING id
-        """, (guest_id, room_id, datefrom, dateto, addinfo))
+        """, (booking.guest_id, booking.room_id, booking.datefrom, booking.dateto, booking.addinfo))
         new_id = cur.fetchone()["id"]
     return {"msg": "Bokning skapad", "booking_id": new_id}
 
