@@ -43,6 +43,21 @@ def read_root():
         db_status = cur.fetchone()
     return { "msg": "Välkommen till hotellets bookningssystem", "v": "0.1" }
 
+@app.get("/guests")
+def get_guests():
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT g.*,
+                (SELECT count(*) 
+                    FROM hotel_bookings
+                    WHERE guest_id = g.id
+                        AND dateto < now()) AS prev_visits
+            FROM hotel_guests g
+            ORDER BY g.lastname
+        """)
+        guests = cur.fetchall()
+    return guests
+
 @app.get("/rooms")
 def get_rooms():
     with get_conn() as conn, conn.cursor() as cur:
@@ -65,9 +80,18 @@ def create_booking(booking: Booking):
 def get_bookings():
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute("""
-            SELECT hb.id, hr.room_number, hb.datefrom, hb.dateto
+            SELECT 
+                hb.id,
+                hr.room_number,
+                hb.datefrom,
+                hb.dateto,
+                (hb.dateto - hb.datefrom) AS nights,
+                (hg.firstname || ' ' || hg.lastname) AS guest,
+                (hr.price * (hb.dateto - hb.datefrom)) AS price,
+                hb.addinfo
             FROM hotel_bookings hb
             JOIN hotel_rooms hr ON hb.room_id = hr.id
+            JOIN hotel_guests hg ON hb.guest_id = hg.id
         """)
         bookings = cur.fetchall()
     return bookings

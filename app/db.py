@@ -13,7 +13,7 @@ def create_schema():
                 -- lägg till 
                    CREATE EXTENSION IF NOT EXISTS pgcrypto;
                         
-                        
+
                 CREATE TABLE IF NOT EXISTS hotel_guests (
                     id SERIAL PRIMARY KEY,
                     firstname VARCHAR NOT NULL,
@@ -30,7 +30,7 @@ def create_schema():
 
                 CREATE TABLE IF NOT EXISTS hotel_bookings (
                     id SERIAL PRIMARY KEY,
-                    guest_id INT REFERENCES hotel_guests(id),
+                    guest_id INT REFERENCES hotel_guests(id),-- foreign key (främmande nyckel)
                     room_id INT REFERENCES hotel_rooms(id),
                     datefrom DATE NOT NULL,
                     dateto DATE NOT NULL,
