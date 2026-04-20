@@ -52,8 +52,19 @@ def create_booking(guest_id: int, room_id: int, datefrom: str, dateto: str, addi
         new_id = cur.fetchone()["id"]
     return {"msg": "Bokning skapad", "booking_id": new_id}
 
+@app.get("/bookings")
+def get_bookings():
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("""
+            SELECT hb.id, hr.room_number, hb.datefrom, hb.dateto
+            FROM hotel_bookings hb
+            JOIN hotel_rooms hr ON hb.room_id = hr.id
+        """)
+        bookings = cur.fetchall()
+    return bookings
 @app.get("/items/{id}")
 def read_item(item_id: int, q: str = None):
+    
     return {"id": id, "q": q}
 
 @app.get("/api/ip")
