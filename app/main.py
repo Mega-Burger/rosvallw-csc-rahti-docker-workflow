@@ -88,7 +88,8 @@ def get_bookings():
                 (hb.dateto - hb.datefrom) AS nights,
                 (hg.firstname || ' ' || hg.lastname) AS guest,
                 (hr.price * (hb.dateto - hb.datefrom)) AS price,
-                hb.addinfo
+                hb.addinfo,
+                hb.stars
             FROM hotel_bookings hb
             JOIN hotel_rooms hr ON hb.room_id = hr.id
             JOIN hotel_guests hg ON hb.guest_id = hg.id
